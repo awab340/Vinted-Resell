@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Awab Reselling Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="/inventory/add" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Add Item
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="bi bi-box-seam text-primary" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="card-title">Active Listings</h5>
+                <h2 class="display-4 fw-bold text-primary">{{ stats.inventory.listed if stats.inventory else 0 }}</h2>
+                <p class="card-text text-muted small">Currently listed for sale</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="bi bi-pencil-square text-warning" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="card-title">Drafts</h5>
+                <h2 class="display-4 fw-bold text-warning">{{ stats.inventory.draft if stats.inventory else 0 }}</h2>
+                <p class="card-text text-muted small">Items ready to list</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="bi bi-currency-pound text-success" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="card-title">Profit (30d)</h5>
+                <h2 class="display-4 fw-bold text-success">£{{ stats.sales_30d.total_profit if stats.sales_30d else 0 }}</h2>
+                <p class="card-text text-muted small">{{ stats.sales_30d.total_sales if stats.sales_30d else 0 }} sales</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="bi bi-truck text-info" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="card-title">To Ship</h5>
+                <h2 class="display-4 fw-bold text-info">{{ stats.pending_shipments if stats.pending_shipments else 0 }}</h2>
+                <p class="card-text text-muted small">Orders awaiting dispatch</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-0">Total Inventory</h6>
+                        <h3 class="mb-0">{{ stats.inventory.total if stats.inventory else 0 }}</h3>
+                    </div>
+                    <i class="bi bi-box-seam text-primary" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-0">Open Returns</h6>
+                        <h3 class="mb-0">{{ stats.open_returns if stats.open_returns else 0 }}</h3>
+                    </div>
+                    <i class="bi bi-arrow-return-left text-danger" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-0">Pending Tasks</h6>
+                        <h3 class="mb-0">{{ stats.pending_tasks if stats.pending_tasks else 0 }}</h3>
+                    </div>
+                    <i class="bi bi-check2-square text-secondary" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Sales -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-currency-pound me-2 text-success"></i>
+                    <h5 class="card-title mb-0">Recent Sales</h5>
+                </div>
+                <a href="/sales" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_sales %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Platform</th>
+                            <th>Price</th>
+                            <th>Profit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for sale in recent_sales %}
+                        <tr>
+                            <td>{{ sale.item_name[:30] }}...</td>
+                            <td><span class="badge bg-secondary">{{ sale.platform }}</span></td>
+                            <td>£{{ sale.sale_price }}</td>
+                            <td class="text-success fw-bold">£{{ sale.net_profit }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">No sales yet</p>
+                    <a href="/sales/add" class="btn btn-sm btn-primary">Record First Sale</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Tasks -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-check2-square me-2 text-primary"></i>
+                    <h5 class="card-title mb-0">Pending Tasks</h5>
+                </div>
+                <a href="/tasks" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if pending_tasks %}
+                <ul class="list-group list-group-flush">
+                    {% for task in pending_tasks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">{{ task.title }}</div>
+                            <small class="text-muted">
+                                {% if task.due_date %}Due: {{ task.due_date }}{% endif %}
+                            </small>
+                        </div>
+                        <span class="badge bg-{{ 'danger' if task.priority == 'Urgent' else 'warning' if task.priority == 'High' else 'secondary' }} rounded-pill">
+                            {{ task.priority }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">No pending tasks</p>
+                    <a href="/tasks" class="btn btn-sm btn-primary">Create Task</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Inventory -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-box-seam me-2 text-primary"></i>
+                    <h5 class="card-title mb-0">Recent Inventory</h5>
+                </div>
+                <a href="/inventory" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_inventory %}
+                <div class="row">
+                    {% for item in recent_inventory %}
+                    <div class="col-md-3 col-lg-2 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body p-2">
+                                <h6 class="card-title" style="height: 40px; overflow: hidden; font-size: 0.9rem;">
+                                    <strong>{{ item.item_name }}</strong>
+                                </h6>
+                                <p class="card-text small mb-1">
+                                    <span class="badge bg-{{ 'success' if item.listing_status == 'Listed' else 'warning' if item.listing_status == 'Draft' else 'secondary' }}">
+                                        {{ item.listing_status }}
+                                    </span>
+                                </p>
+                                <p class="card-text small mb-1">
+                                    <strong>£{{ item.purchase_price }}</strong>
+                                </p>
+                                <p class="card-text small text-muted mb-0">
+                                    {{ item.brand if item.brand else 'No brand' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">No inventory items yet</p>
+                    <a href="/inventory/add" class="btn btn-primary">Add First Item</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

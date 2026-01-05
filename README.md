@@ -1,7 +1,6 @@
-# Vinted-Notifications
+# Awab Reselling Dashboard
 
-A real-time notification system for Vinted listings that works across all Vinted country domains. Get instant alerts
-when items matching your search criteria are posted.
+A comprehensive personal reselling management system for tracking inventory, sales, shipping, and profits across multiple platforms (Vinted, eBay, Depop, etc.).
 
 ![Vinted-Notifications](https://github.com/user-attachments/assets/f2788511-5a8a-4a8d-8198-a4135081a3d8)
 
